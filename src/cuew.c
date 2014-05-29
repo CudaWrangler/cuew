@@ -172,6 +172,17 @@ typedef void* DynamicLibrary;
 	name = (t##name*)dynamic_library_find(lib, #name "_v2"); \
 	assert(name);
 
+static DynamicLibrary lib;
+
+static void cuewExit(void)
+{
+	if(lib != NULL) {
+		//  Ignore errors
+		dynamic_library_close(lib);
+		lib = NULL;
+	}
+}
+
 /* initialization function */
 
 int cuewInit()
@@ -185,6 +196,11 @@ int cuewInit()
 
 	initialized = 1;
 
+	int error = atexit(cuewExit);
+	if (error) {
+		return 0;
+	}
+
 	/* library paths */
 #ifdef _WIN32
 	/* expected in c:/windows/system or similar, no path needed */
@@ -197,7 +213,7 @@ int cuewInit()
 #endif
 
 	/* load library */
-	DynamicLibrary lib = dynamic_library_open(path);
+	lib = dynamic_library_open(path);
 
 	if(lib == NULL)
 		return 0;
