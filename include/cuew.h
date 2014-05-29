@@ -614,7 +614,7 @@ extern tcuGraphicsGLRegisterImage *cuGraphicsGLRegisterImage;
 extern tcuCtxSetCurrent *cuCtxSetCurrent;
 extern tcuLaunchKernel *cuLaunchKernel;
 
-int cuewInit();
+int cuewInit(void);
 const char *cuewErrorString(CUresult result);
 
 #ifdef __cplusplus

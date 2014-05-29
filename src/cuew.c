@@ -185,22 +185,8 @@ static void cuewExit(void)
 
 /* initialization function */
 
-int cuewInit()
+int cuewInit(void)
 {
-	static int initialized = 0;
-	static int result = 0;
-
-	if(initialized) {
-		return result;
-	}
-
-	initialized = 1;
-
-	int error = atexit(cuewExit);
-	if (error) {
-		return 0;
-	}
-
 	/* library paths */
 #ifdef _WIN32
 	/* expected in c:/windows/system or similar, no path needed */
@@ -212,6 +198,21 @@ int cuewInit()
 	const char *path = "libcuda.so";
 #endif
 
+	static int initialized = 0;
+	static int result = 0;
+	int error, driver_version;
+
+	if(initialized) {
+		return result;
+	}
+
+	initialized = 1;
+
+	error = atexit(cuewExit);
+	if (error) {
+		return 0;
+	}
+
 	/* load library */
 	lib = dynamic_library_open(path);
 
@@ -219,7 +220,7 @@ int cuewInit()
 		return 0;
 
 	/* detect driver version */
-	int driver_version = 1000;
+	driver_version = 1000;
 
 	CUDA_LIBRARY_FIND_CHECKED(cuDriverGetVersion);
 	if(cuDriverGetVersion)
