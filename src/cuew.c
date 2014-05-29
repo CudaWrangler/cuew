@@ -176,7 +176,7 @@ typedef void* DynamicLibrary;
 
 int cuewInit()
 {
-	static int initialized = 9;
+	static int initialized = 0;
 	static int result = 0;
 
 	if(initialized) {

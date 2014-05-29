@@ -17,6 +17,10 @@
 #ifndef CUEW_H
 #define CUEW_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 
 /* defines, structs, enums */
@@ -612,5 +616,9 @@ extern tcuLaunchKernel *cuLaunchKernel;
 
 int cuewInit();
 const char *cuewErrorString(CUresult result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // CUEW_H
