@@ -16,7 +16,10 @@
 
 #include "cuew.h"
 #include <assert.h>
-#include <dlfcn.h>
+
+#ifndef _WIN32
+#  include <dlfcn.h>
+#endif
 
 /* function defininitions */
 
