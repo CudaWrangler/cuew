@@ -1,5 +1,6 @@
 import os
 import sys
+from cuda_errors import CUDA_ERRORS
 from pycparser import c_parser, c_ast, parse_file
 from subprocess import Popen, PIPE
 
@@ -24,10 +25,13 @@ FILES = ["cuda.h"]
 TYPEDEFS = []
 FUNC_TYPEDEFS = []
 SYMBOLS = []
+DEFINES = []
+ERRORS = []
 
 
 class FuncDefVisitor(c_ast.NodeVisitor):
     indent = 0
+    prev_complex = False
 
     def _get_quals_string(self, node):
         if node.quals:
@@ -67,7 +71,12 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         if param.name:
             result += ' ' + param.name
         if isinstance(param_type, c_ast.ArrayDecl):
+            # TODO(sergey): Workaround to deal with the
+            # preprocessed file where array size got
+            # substituded.
             dim = param_type.dim.value
+            if param.name == "reserved" and dim == "64":
+                dim = "CU_IPC_HANDLE_SIZE"
             result += '[' + dim + ']'
         return result
 
@@ -96,6 +105,8 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                     if enumerator.value:
                         result += " = " + enumerator.value.value
                     result += ",\n"
+                    if enumerator.name.startswith("CUDA_ERROR_"):
+                        ERRORS.append(enumerator.name)
         return result
 
     def visit_Decl(self, node):
@@ -147,12 +158,16 @@ class FuncDefVisitor(c_ast.NodeVisitor):
             complex = True
         else:
             typedef = quals + type + " " + node.name
-        if complex:
+        if complex or self.prev_complex:
             typedef = "\ntypedef " + typedef + ";"
         else:
             typedef = "typedef " + typedef + ";"
-        if typedef != "typedef long size_t;":
+
+        if typedef != "typedef long size_t;" and \
+            not typedef.endswith("CUdeviceptr;"):
             TYPEDEFS.append(typedef)
+
+        self.prev_complex = complex
 
 
 def get_latest_cpp():
@@ -185,6 +200,17 @@ def parse_files():
     for filename in FILES:
         text = preprocess_file(filename, cpp_path)
         ast = parser.parse(text, filename)
+
+        with open(filename) as f:
+            lines = f.readlines()
+            for line in lines:
+                if line.startswith("#define"):
+                    line = line[8:-1]
+                    token = line.split()
+                    if token[0] not in ("__cuda_cuda_h__",
+                                        "CUDA_CB",
+                                        "CUDAAPI"):
+                        DEFINES.append(token)
 
     v = FuncDefVisitor()
     v.visit(ast)
@@ -223,7 +249,22 @@ def print_header():
     print("#include <stdlib.h>")
     print("")
 
+    print("/* Defines. */")
+    for define in DEFINES:
+        print('#define %s' % (' '.join(define)))
+    print("")
+
     print("/* Types. */")
+
+    # We handle this specially because of the file is
+    # getting preprocessed.
+    print("""#if defined(__x86_64) || defined(AMD64) || defined(_M_AMD64)
+typedef unsigned long long CUdeviceptr;
+#else
+typedef unsigned int CUdeviceptr;
+#endif
+""")
+
     for typedef in TYPEDEFS:
         print('%s' % (typedef))
 
@@ -231,8 +272,10 @@ def print_header():
     print("""
 #ifdef _WIN32
 #  define CUDAAPI __stdcall
+#  define CUDA_CB __stdcall
 #else
 #  define CUDAAPI
+#  define CUDA_CB
 #endif""")
     print("")
 
@@ -244,6 +287,11 @@ def print_header():
     print("/* Function declarations. */")
     for symbol in SYMBOLS:
         print('extern t%s %s;' % (symbol, symbol))
+
+    print("")
+    print("int %sInit(void);" % (LIB.lower()))
+    # TODO(sergey): Get rid of hardcoded CUresult.
+    print("const char *%sErrorString(CUresult result);" % (LIB.lower()))
 
     close_header_guard()
 
@@ -389,7 +437,21 @@ def print_implementation():
     print_dl_init()
 
     print("")
-    print("const char *cuewErrorString(CUresult result) { return \"\"; }")
+    # TODO(sergey): Get rid of hardcoded CUresult.
+    print("const char *%sErrorString(CUresult result) {" % (LIB.lower()))
+    print("  switch(result) {")
+    print("    case CUDA_SUCCESS: return \"No errors\";")
+
+    for error in ERRORS:
+        if error in CUDA_ERRORS:
+            str = CUDA_ERRORS[error]
+        else:
+            str = error[11:]
+        print("    case %s: return \"%s\";" % (error, str))
+
+    print("    default: return \"Unknown CUDA error value\";")
+    print("  }")
+    print("}")
 
 if __name__ == "__main__":
     parse_files()
@@ -400,6 +462,7 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "hdr":
         print_header()
+        pass
     elif sys.argv[1] == "impl":
         print_implementation()
     else:
