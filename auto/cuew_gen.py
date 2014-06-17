@@ -20,7 +20,7 @@ COPYRIGHT = """/*
  * See the License for the specific language governing permissions and
  * limitations under the License
  */"""
-FILES = ["cuda.h"]
+FILES = ["cuda.h", "cudaGL.h"]
 
 TYPEDEFS = []
 FUNC_TYPEDEFS = []
@@ -33,6 +33,7 @@ ERRORS = []
 class FuncDefVisitor(c_ast.NodeVisitor):
     indent = 0
     prev_complex = False
+    dummy_typedefs = ['size_t', 'CUdeviceptr']
 
     def _get_quals_string(self, node):
         if node.quals:
@@ -141,9 +142,12 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                 FUNC_TYPEDEFS.append(typedef)
 
     def visit_Typedef(self, node):
-        quals = self._get_quals_string(node)
-        type = self._get_ident_type(node.type)
+        if node.name in self.dummy_typedefs:
+            return
+
         complex = False
+        type = self._get_ident_type(node.type)
+        quals = self._get_quals_string(node)
 
         if isinstance(node.type.type, c_ast.Struct):
             self.indent += 1
@@ -164,9 +168,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         else:
             typedef = "typedef " + typedef + ";"
 
-        if typedef != "typedef long size_t;" and \
-            not typedef.endswith("CUdeviceptr;"):
-            TYPEDEFS.append(typedef)
+        TYPEDEFS.append(typedef)
 
         self.prev_complex = complex
 
@@ -181,8 +183,13 @@ def get_latest_cpp():
 
 
 def preprocess_file(filename, cpp_path):
+    args = [cpp_path, "-I./"]
+    if filename.endswith("GL.h"):
+        args.append("-DCUDAAPI= ")
+    args.append(filename)
+
     try:
-        pipe = Popen([cpp_path, "-I./", filename],
+        pipe = Popen(args,
                      stdout=PIPE,
                      universal_newlines=True)
         text = pipe.communicate()[0]
@@ -199,7 +206,28 @@ def parse_files():
     cpp_path = get_latest_cpp()
 
     for filename in FILES:
+        dummy_typedefs = {}
         text = preprocess_file(filename, cpp_path)
+
+        if filename.endswith("GL.h"):
+            dummy_typedefs = {
+                "CUresult": "int",
+                "CUgraphicsResource": "void *",
+                "CUdevice": "void *",
+                "CUcontext": "void *",
+                "CUdeviceptr": "void *",
+                "CUstream": "void *"
+                }
+
+            text = "typedef int GLint;\n" + text
+            text = "typedef unsigned int GLuint;\n" + text
+            text = "typedef unsigned int GLenum;\n" + text
+            text = "typedef long size_t;\n" + text
+
+        for typedef in dummy_typedefs:
+            text = "typedef " + dummy_typedefs[typedef] + " " + \
+                typedef + ";\n" + text
+
         ast = parser.parse(text, filename)
 
         with open(filename) as f:
@@ -220,8 +248,10 @@ def parse_files():
                     if len(token) == 2 and token[1].endswith("_v2"):
                         DEFINES_V2.append(token)
 
-    v = FuncDefVisitor()
-    v.visit(ast)
+        v = FuncDefVisitor()
+        for typedef in dummy_typedefs:
+            v.dummy_typedefs.append(typedef)
+        v.visit(ast)
 
 
 def print_copyright():
