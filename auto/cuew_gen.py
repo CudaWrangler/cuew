@@ -1,5 +1,7 @@
+import os
 import sys
 from pycparser import c_parser, c_ast, parse_file
+from subprocess import Popen, PIPE
 
 LIB = "CUEW"
 COPYRIGHT = """/*
@@ -109,14 +111,14 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                     symbol_name = func_decl_type.declname
                     typedef += self._get_quals_string(func_decl_type)
                     typedef += self._get_ident_type(func_decl_type.type)
-                    typedef += ' CUDARTAPI'
+                    typedef += ' CUDAAPI'
                     typedef += ' (*t' + symbol_name + ') '
                 elif isinstance(func_decl_type, c_ast.PtrDecl):
                     ptr_type = func_decl_type.type
                     symbol_name = ptr_type.declname
                     typedef += self._get_quals_string(ptr_type)
                     typedef += self._get_ident_type(func_decl_type)
-                    typedef += ' CUDARTAPI'
+                    typedef += ' CUDAAPI'
                     typedef += ' (*t' + symbol_name + ') '
 
                 typedef += '(' + \
@@ -145,15 +147,44 @@ class FuncDefVisitor(c_ast.NodeVisitor):
             complex = True
         else:
             typedef = quals + type + " " + node.name
-        typedef = "typedef " + typedef + ";"
         if complex:
-            typedef += "\n"
-        TYPEDEFS.append(typedef)
+            typedef = "\ntypedef " + typedef + ";"
+        else:
+            typedef = "typedef " + typedef + ";"
+        if typedef != "typedef long size_t;":
+            TYPEDEFS.append(typedef)
+
+
+def get_latest_cpp():
+    path_prefix = "/usr/bin"
+    for cpp_version in ["9", "8", "7", "6", "5", "4"]:
+        test_cpp = os.path.join(path_prefix, "cpp-4." + cpp_version)
+        if os.path.exists(test_cpp):
+            return test_cpp
+    return None
+
+
+def preprocess_file(filename, cpp_path):
+    try:
+        pipe = Popen([cpp_path, "-I./", filename],
+                     stdout=PIPE,
+                     universal_newlines=True)
+        text = pipe.communicate()[0]
+    except OSError as e:
+        raise RuntimeError("Unable to invoke 'cpp'.  " +
+            'Make sure its path was passed correctly\n' +
+            ('Original error: %s' % e))
+
+    return text
 
 
 def parse_files():
+    parser = c_parser.CParser()
+    cpp_path = get_latest_cpp()
+
     for filename in FILES:
-        ast = parse_file(filename, use_cpp=True)
+        text = preprocess_file(filename, cpp_path)
+        ast = parser.parse(text, filename)
 
     v = FuncDefVisitor()
     v.visit(ast)
@@ -188,9 +219,22 @@ def print_header():
     print_copyright()
     open_header_guard()
 
+    # Fot size_t.
+    print("#include <stdlib.h>")
+    print("")
+
     print("/* Types. */")
     for typedef in TYPEDEFS:
         print('%s' % (typedef))
+
+    # TDO(sergey): This is only specific to CUDA wrapper.
+    print("""
+#ifdef _WIN32
+#  define CUDAAPI __stdcall
+#else
+#  define CUDAAPI
+#endif""")
+    print("")
 
     print("/* Function types. */")
     for func_typedef in FUNC_TYPEDEFS:
@@ -230,10 +274,10 @@ typedef void* DynamicLibrary;
 
 def print_dl_helper_macro():
     print("""#define DL_LIBRARY_FIND_CHECKED(name) \\
-        name = (t##name*)dynamic_library_find(lib, #name);
+        name = (t##name)dynamic_library_find(lib, #name);
 
 #define DL_LIBRARY_FIND(name) \\
-        name = (t##name*)dynamic_library_find(lib, #name); \\
+        name = (t##name)dynamic_library_find(lib, #name); \\
         assert(name);
 
 static DynamicLibrary lib;""")
@@ -305,7 +349,7 @@ def print_driver_version_guard():
 
 
 def print_dl_init():
-    print("void %sInit(void) {" % (LIB.lower()))
+    print("int %sInit(void) {" % (LIB.lower()))
 
     print("  /* Library paths. */")
     print_lib_path()
@@ -349,5 +393,15 @@ def print_implementation():
 
 if __name__ == "__main__":
     parse_files()
-    print_header()
-    #print_implementation()
+
+    if len(sys.argv) != 2:
+        print("Usage: %s hdr|impl" % (sys.argv[0]))
+        exit(1)
+
+    if sys.argv[1] == "hdr":
+        print_header()
+    elif sys.argv[1] == "impl":
+        print_implementation()
+    else:
+        print("Unknown command %s" % (sys.argv[1]))
+        exit(1)
