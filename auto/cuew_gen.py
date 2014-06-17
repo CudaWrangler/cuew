@@ -5,6 +5,8 @@ from pycparser import c_parser, c_ast, parse_file
 from subprocess import Popen, PIPE
 
 LIB = "CUEW"
+VERSION_MAJOR = "1"
+VERSION_MINOR = "0"
 COPYRIGHT = """/*
  * Copyright 2011-2014 Blender Foundation
  *
@@ -253,6 +255,9 @@ def parse_files():
             v.dummy_typedefs.append(typedef)
         v.visit(ast)
 
+        FUNC_TYPEDEFS.append('')
+        SYMBOLS.append('')
+
 
 def print_copyright():
     print(COPYRIGHT)
@@ -288,6 +293,9 @@ def print_header():
     print("")
 
     print("/* Defines. */")
+    print("#define %s_VERSION_MAJOR %s" % (LIB, VERSION_MAJOR))
+    print("#define %s_VERSION_MINOR %s" % (LIB, VERSION_MINOR))
+    print("")
     for define in DEFINES:
         print('#define %s' % (' '.join(define)))
     print("")
@@ -332,7 +340,10 @@ typedef unsigned int CUdeviceptr;
 
     print("/* Function declarations. */")
     for symbol in SYMBOLS:
-        print('extern t%s %s;' % (symbol, symbol))
+        if symbol:
+            print('extern t%s %s;' % (symbol, symbol))
+        else:
+            print("")
 
     print("")
     print("int %sInit(void);" % (LIB.lower()))
@@ -452,7 +463,10 @@ def print_dl_init():
 
     print("  /* Fetch all function pointers. */")
     for symbol in SYMBOLS:
-        print("  DL_LIBRARY_FIND(%s);" % (symbol))
+        if symbol:
+            print("  DL_LIBRARY_FIND(%s);" % (symbol))
+        else:
+            print("")
 
     print("")
     print("  result = 1;")
@@ -474,7 +488,10 @@ def print_implementation():
 
     print("/* Function definitions. */")
     for symbol in SYMBOLS:
-        print('t%s %s;' % (symbol, symbol))
+        if symbol:
+            print('t%s %s;' % (symbol, symbol))
+        else:
+            print("")
     print("")
 
     print_dl_close()
