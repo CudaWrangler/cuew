@@ -26,6 +26,7 @@ TYPEDEFS = []
 FUNC_TYPEDEFS = []
 SYMBOLS = []
 DEFINES = []
+DEFINES_V2 = []
 ERRORS = []
 
 
@@ -212,6 +213,13 @@ def parse_files():
                                         "CUDAAPI"):
                         DEFINES.append(token)
 
+            for line in lines:
+                if line.startswith("    #define"):
+                    line = line[12:-1]
+                    token = line.split()
+                    if len(token) == 2 and token[1].endswith("_v2"):
+                        DEFINES_V2.append(token)
+
     v = FuncDefVisitor()
     v.visit(ast)
 
@@ -251,6 +259,14 @@ def print_header():
 
     print("/* Defines. */")
     for define in DEFINES:
+        print('#define %s' % (' '.join(define)))
+    print("")
+
+    print("""/* Functions which changed 3.1 -> 3.2 for 64 bit stuff,
+ * the cuda library has both the old ones for compatibility and new
+ * ones with _v2 postfix,
+ */""")
+    for define in DEFINES_V2:
         print('#define %s' % (' '.join(define)))
     print("")
 
@@ -462,7 +478,6 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "hdr":
         print_header()
-        pass
     elif sys.argv[1] == "impl":
         print_implementation()
     else:
