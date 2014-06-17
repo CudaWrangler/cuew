@@ -265,8 +265,8 @@ def print_copyright():
 
 
 def open_header_guard():
-    print("#ifndef __%s_H_" % (LIB))
-    print("#define __%s_H_" % (LIB))
+    print("#ifndef __%s_H__" % (LIB))
+    print("#define __%s_H__" % (LIB))
     print("")
     print("#ifdef __cplusplus")
     print("extern \"C\" {")
@@ -280,8 +280,7 @@ def close_header_guard():
     print("}")
     print("#endif")
     print("")
-    print("#endif  /* __%s_H_ */" % (LIB))
-    print("")
+    print("#endif  /* __%s_H__ */" % (LIB))
 
 
 def print_header():

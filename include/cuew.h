@@ -14,8 +14,8 @@
  * limitations under the License
  */
 
-#ifndef __CUEW_H_
-#define __CUEW_H_
+#ifndef __CUEW_H__
+#define __CUEW_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -1048,5 +1048,4 @@ const char *cuewErrorString(CUresult result);
 }
 #endif
 
-#endif  /* __CUEW_H_ */
-
+#endif  /* __CUEW_H__ */
