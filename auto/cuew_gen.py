@@ -5,6 +5,7 @@ from pycparser import c_parser, c_ast, parse_file
 from subprocess import Popen, PIPE
 
 LIB = "CUEW"
+REAL_LIB = "CUDA"
 VERSION_MAJOR = "1"
 VERSION_MINOR = "0"
 COPYRIGHT = """/*
@@ -374,17 +375,19 @@ typedef void* DynamicLibrary;
 #  define dynamic_library_close(lib)         dlclose(lib)
 #  define dynamic_library_find(lib, symbol)  dlsym(lib, symbol)
 #endif""")
+    print("")
 
 
 def print_dl_helper_macro():
-    print("""#define DL_LIBRARY_FIND_CHECKED(name) \\
+    print("""#define %s_LIBRARY_FIND_CHECKED(name) \\
         name = (t##name)dynamic_library_find(lib, #name);
 
-#define DL_LIBRARY_FIND(name) \\
+#define %s_LIBRARY_FIND(name) \\
         name = (t##name)dynamic_library_find(lib, #name); \\
         assert(name);
 
-static DynamicLibrary lib;""")
+static DynamicLibrary lib;""" % (REAL_LIB, REAL_LIB))
+    print("")
 
 
 def print_dl_close():
@@ -441,7 +444,7 @@ def print_driver_version_guard():
     print("""  /* Detect driver version. */
   driver_version = 1000;
 
-  DL_LIBRARY_FIND_CHECKED(cuDriverGetVersion);
+  %s_LIBRARY_FIND_CHECKED(cuDriverGetVersion);
   if (cuDriverGetVersion) {
     cuDriverGetVersion(&driver_version);
   }
@@ -449,7 +452,7 @@ def print_driver_version_guard():
   /* We require version 4.0. */
   if (driver_version < 4000) {
     return 0;
-  }""")
+  }""" % (REAL_LIB))
 
 
 def print_dl_init():
@@ -463,7 +466,7 @@ def print_dl_init():
     print("  /* Fetch all function pointers. */")
     for symbol in SYMBOLS:
         if symbol:
-            print("  DL_LIBRARY_FIND(%s);" % (symbol))
+            print("  %s_LIBRARY_FIND(%s);" % (REAL_LIB, symbol))
         else:
             print("")
 
