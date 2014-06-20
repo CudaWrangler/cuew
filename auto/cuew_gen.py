@@ -1,9 +1,33 @@
+# Copyright 2014 Blender Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+
+# This script generates either header or implementation file from
+# a CUDA header files.
+#
+# Usage: cuew hdr|impl [/path/to/cuda/includes]
+#  - hdr means header file will be generated and printed to stdout.
+#  - impl means implementation file will be generated and printed to stdout.
+#  - /path/to/cuda/includes is a path to a folder with cuda.h and cudaGL.h
+#    for which wrangler will be generated.
+
 import os
 import sys
 from cuda_errors import CUDA_ERRORS
 from pycparser import c_parser, c_ast, parse_file
 from subprocess import Popen, PIPE
 
+INCLUDE_DIR = "/usr/include"
 LIB = "CUEW"
 REAL_LIB = "CUDA"
 VERSION_MAJOR = "1"
@@ -128,14 +152,14 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                     typedef += self._get_quals_string(func_decl_type)
                     typedef += self._get_ident_type(func_decl_type.type)
                     typedef += ' CUDAAPI'
-                    typedef += ' (*t' + symbol_name + ') '
+                    typedef += ' t' + symbol_name
                 elif isinstance(func_decl_type, c_ast.PtrDecl):
                     ptr_type = func_decl_type.type
                     symbol_name = ptr_type.declname
                     typedef += self._get_quals_string(ptr_type)
                     typedef += self._get_ident_type(func_decl_type)
                     typedef += ' CUDAAPI'
-                    typedef += ' (*t' + symbol_name + ') '
+                    typedef += ' t' + symbol_name
 
                 typedef += '(' + \
                     self._stringify_params(func_decl.args.params) + \
@@ -209,10 +233,11 @@ def parse_files():
     cpp_path = get_latest_cpp()
 
     for filename in FILES:
+        filepath = os.path.join(INCLUDE_DIR, filename)
         dummy_typedefs = {}
-        text = preprocess_file(filename, cpp_path)
+        text = preprocess_file(filepath, cpp_path)
 
-        if filename.endswith("GL.h"):
+        if filepath.endswith("GL.h"):
             dummy_typedefs = {
                 "CUresult": "int",
                 "CUgraphicsResource": "void *",
@@ -231,9 +256,9 @@ def parse_files():
             text = "typedef " + dummy_typedefs[typedef] + " " + \
                 typedef + ";\n" + text
 
-        ast = parser.parse(text, filename)
+        ast = parser.parse(text, filepath)
 
-        with open(filename) as f:
+        with open(filepath) as f:
             lines = f.readlines()
             for line in lines:
                 if line.startswith("#define"):
@@ -341,7 +366,7 @@ typedef unsigned int CUdeviceptr;
     print("/* Function declarations. */")
     for symbol in SYMBOLS:
         if symbol:
-            print('extern t%s %s;' % (symbol, symbol))
+            print('extern t%s *%s;' % (symbol, symbol))
         else:
             print("")
 
@@ -380,10 +405,10 @@ typedef void* DynamicLibrary;
 
 def print_dl_helper_macro():
     print("""#define %s_LIBRARY_FIND_CHECKED(name) \\
-        name = (t##name)dynamic_library_find(lib, #name);
+        name = (t##name *)dynamic_library_find(lib, #name);
 
 #define %s_LIBRARY_FIND(name) \\
-        name = (t##name)dynamic_library_find(lib, #name); \\
+        name = (t##name *)dynamic_library_find(lib, #name); \\
         assert(name);
 
 static DynamicLibrary lib;""" % (REAL_LIB, REAL_LIB))
@@ -491,7 +516,7 @@ def print_implementation():
     print("/* Function definitions. */")
     for symbol in SYMBOLS:
         if symbol:
-            print('t%s %s;' % (symbol, symbol))
+            print('t%s *%s;' % (symbol, symbol))
         else:
             print("")
     print("")
@@ -519,11 +544,16 @@ def print_implementation():
     print("}")
 
 if __name__ == "__main__":
-    parse_files()
 
-    if len(sys.argv) != 2:
-        print("Usage: %s hdr|impl" % (sys.argv[0]))
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print("Usage: %s hdr|impl [/path/to/cuda/toolkit/include]" %
+              (sys.argv[0]))
         exit(1)
+
+    if len(sys.argv) == 3:
+        INCLUDE_DIR = sys.argv
+
+    parse_files()
 
     if sys.argv[1] == "hdr":
         print_header()
