@@ -291,14 +291,16 @@ int cuewInit(void) {
 
   error = atexit(cuewExit);
   if (error) {
-    return CUEW_ERROR_ATEXIT_FAILED;
+    result = CUEW_ERROR_ATEXIT_FAILED;
+    return result;
   }
 
   /* Load library. */
   lib = dynamic_library_open(path);
 
   if (lib == NULL) {
-    return CUEW_ERROR_OPEN_FAILED;
+    result = CUEW_ERROR_OPEN_FAILED;
+    return result;
   }
 
   /* Detect driver version. */
@@ -311,7 +313,8 @@ int cuewInit(void) {
 
   /* We require version 4.0. */
   if (driver_version < 4000) {
-    return 0;
+    result = CUEW_ERROR_OPEN_FAILED;
+    return result;
   }
   /* Fetch all function pointers. */
   CUDA_LIBRARY_FIND(cuGetErrorString);
