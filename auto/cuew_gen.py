@@ -31,7 +31,7 @@ INCLUDE_DIR = "/usr/include"
 LIB = "CUEW"
 REAL_LIB = "CUDA"
 VERSION_MAJOR = "1"
-VERSION_MINOR = "1"
+VERSION_MINOR = "2"
 COPYRIGHT = """/*
  * Copyright 2011-2014 Blender Foundation
  *
@@ -371,6 +371,12 @@ typedef unsigned int CUdeviceptr;
             print("")
 
     print("")
+    print("enum {")
+    print("  CUEW_SUCCESS = 0,")
+    print("  CUEW_ERROR_OPEN_FAILED = -1,")
+    print("  CUEW_ERROR_ATEXIT_FAILED = -2,")
+    print("};")
+    print("")
     print("int %sInit(void);" % (LIB.lower()))
     # TODO(sergey): Get rid of hardcoded CUresult.
     print("const char *%sErrorString(CUresult result);" % (LIB.lower()))
@@ -454,14 +460,14 @@ def print_init_guard():
 
   error = atexit(cuewExit);
   if (error) {
-    return 0;
+    return CUEW_ERROR_ATEXIT_FAILED;
   }
 
   /* Load library. */
   lib = dynamic_library_open(path);
 
   if (lib == NULL) {
-    return 0;
+    return CUEW_ERROR_OPEN_FAILED;
   }""")
     print("")
 
@@ -498,7 +504,7 @@ def print_dl_init():
             print("")
 
     print("")
-    print("  result = 1;")
+    print("  result = CUEW_SUCCESS;")
     print("  return result;")
 
     print("}")
@@ -514,7 +520,6 @@ def print_implementation():
 #  define pclose _pclose
 #  define _CRT_SECURE_NO_WARNINGS
 #endif
-
 """)
     print("#include <cuew.h>")
     print("#include <assert.h>")

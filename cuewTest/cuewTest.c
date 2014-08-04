@@ -6,7 +6,7 @@
 #include "cuew.h"
 
 int main(int argc, char* argv[]) {
-  if (cuewInit()) {
+  if (cuewInit() == CUEW_SUCCESS) {
     printf("CUDA found\n");
     printf("NVCC path: %s\n", cuewCompilerPath());
     printf("NVCC version: %d\n", cuewCompilerVersion());

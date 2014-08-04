@@ -25,7 +25,7 @@ extern "C" {
 
 /* Defines. */
 #define CUEW_VERSION_MAJOR 1
-#define CUEW_VERSION_MINOR 1
+#define CUEW_VERSION_MINOR 2
 
 #define CUDA_VERSION 6000
 #define CU_IPC_HANDLE_SIZE 64
@@ -1119,6 +1119,12 @@ extern tcuGLSetBufferObjectMapFlags *cuGLSetBufferObjectMapFlags;
 extern tcuGLMapBufferObjectAsync_v2 *cuGLMapBufferObjectAsync_v2;
 extern tcuGLUnmapBufferObjectAsync *cuGLUnmapBufferObjectAsync;
 
+
+enum {
+  CUEW_SUCCESS = 0,
+  CUEW_ERROR_OPEN_FAILED = -1,
+  CUEW_ERROR_ATEXIT_FAILED = -2,
+};
 
 int cuewInit(void);
 const char *cuewErrorString(CUresult result);

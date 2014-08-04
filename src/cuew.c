@@ -291,14 +291,14 @@ int cuewInit(void) {
 
   error = atexit(cuewExit);
   if (error) {
-    return 0;
+    return CUEW_ERROR_ATEXIT_FAILED;
   }
 
   /* Load library. */
   lib = dynamic_library_open(path);
 
   if (lib == NULL) {
-    return 0;
+    return CUEW_ERROR_OPEN_FAILED;
   }
 
   /* Detect driver version. */
@@ -514,7 +514,7 @@ int cuewInit(void) {
   CUDA_LIBRARY_FIND(cuGLUnmapBufferObjectAsync);
 
 
-  result = 1;
+  result = CUEW_SUCCESS;
   return result;
 }
 
