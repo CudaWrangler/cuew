@@ -31,7 +31,7 @@ INCLUDE_DIR = "/usr/include"
 LIB = "CUEW"
 REAL_LIB = "CUDA"
 VERSION_MAJOR = "1"
-VERSION_MINOR = "0"
+VERSION_MINOR = "1"
 COPYRIGHT = """/*
  * Copyright 2011-2014 Blender Foundation
  *
@@ -374,6 +374,8 @@ typedef unsigned int CUdeviceptr;
     print("int %sInit(void);" % (LIB.lower()))
     # TODO(sergey): Get rid of hardcoded CUresult.
     print("const char *%sErrorString(CUresult result);" % (LIB.lower()))
+    print("const char *cuewCompilerPath(void);")
+    print("int cuewCompilerVersion(void);")
 
     close_header_guard()
 
@@ -508,6 +510,9 @@ def print_implementation():
     # TODO(sergey): Get rid of hardcoded header.
     print("#include <cuew.h>")
     print("#include <assert.h>")
+    print("#include <stdio.h>")
+    print("#include <string.h>")
+    print("#include <sys/stat.h>")
     print("")
 
     print_dl_wrapper()
@@ -543,6 +548,9 @@ def print_implementation():
     print("  }")
     print("}")
 
+    from cuda_extra import extra_code
+    print(extra_code)
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 2 and len(sys.argv) != 3:
@@ -551,7 +559,7 @@ if __name__ == "__main__":
         exit(1)
 
     if len(sys.argv) == 3:
-        INCLUDE_DIR = sys.argv
+        INCLUDE_DIR = sys.argv[2]
 
     parse_files()
 
