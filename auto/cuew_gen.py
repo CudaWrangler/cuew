@@ -382,12 +382,6 @@ typedef unsigned int CUdeviceptr;
 
 def print_dl_wrapper():
     print("""#ifdef _WIN32
-#  ifdef _MSC_VER
-#    define snprintf _snprintf
-#    define popen _popen
-#    define pclose _pclose
-#  endif
-
 #  define WIN32_LEAN_AND_MEAN
 #  define VC_EXTRALEAN
 #  include <windows.h>
@@ -514,6 +508,14 @@ def print_implementation():
     print_copyright()
 
     # TODO(sergey): Get rid of hardcoded header.
+    print("""#ifdef _MSC_VER
+#  define snprintf _snprintf
+#  define popen _popen
+#  define pclose _pclose
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
+
+""")
     print("#include <cuew.h>")
     print("#include <assert.h>")
     print("#include <stdio.h>")

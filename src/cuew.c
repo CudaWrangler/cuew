@@ -14,6 +14,13 @@
  * limitations under the License
  */
 
+#ifdef _MSC_VER
+#  define snprintf _snprintf
+#  define popen _popen
+#  define pclose _pclose
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <cuew.h>
 #include <assert.h>
 #include <stdio.h>
@@ -21,12 +28,6 @@
 #include <sys/stat.h>
 
 #ifdef _WIN32
-#  ifdef _MSC_VER
-#    define snprintf _snprintf
-#    define popen _popen
-#    define pclose _pclose
-#  endif
-
 #  define WIN32_LEAN_AND_MEAN
 #  define VC_EXTRALEAN
 #  include <windows.h>
