@@ -1,8 +1,4 @@
 extra_code = """
-#ifdef _MSC_VER
-#  define snprintf _snprintf
-#endif
-
 static void path_join(const char *path1,
                       const char *path2,
                       int maxlen,

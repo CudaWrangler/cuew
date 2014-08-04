@@ -21,6 +21,12 @@
 #include <sys/stat.h>
 
 #ifdef _WIN32
+#  ifdef _MSC_VER
+#    define snprintf _snprintf
+#    define popen _popen
+#    define pclose _pclose
+#  endif
+
 #  define WIN32_LEAN_AND_MEAN
 #  define VC_EXTRALEAN
 #  include <windows.h>
@@ -573,10 +579,6 @@ const char *cuewErrorString(CUresult result) {
     default: return "Unknown CUDA error value";
   }
 }
-
-#ifdef _MSC_VER
-#  define snprintf _snprintf
-#endif
 
 static void path_join(const char *path1,
                       const char *path2,
