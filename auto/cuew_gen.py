@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+#
 # Copyright 2014 Blender Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -252,7 +254,7 @@ def parse_files():
             text = "typedef unsigned int GLenum;\n" + text
             text = "typedef long size_t;\n" + text
 
-        for typedef in dummy_typedefs:
+        for typedef in sorted(dummy_typedefs):
             text = "typedef " + dummy_typedefs[typedef] + " " + \
                 typedef + ";\n" + text
 
@@ -270,7 +272,8 @@ def parse_files():
                         DEFINES.append(token)
 
             for line in lines:
-                if line.startswith("    #define"):
+                # TODO(sergey): Use better matching rule for _v2 symbols.
+                if line[0].isspace() and line.lstrip().startswith("#define"):
                     line = line[12:-1]
                     token = line.split()
                     if len(token) == 2 and token[1].endswith("_v2"):
@@ -355,8 +358,8 @@ typedef unsigned int CUdeviceptr;
 #else
 #  define CUDAAPI
 #  define CUDA_CB
-#endif""")
-    print("")
+#endif
+""")
 
     print("/* Function types. */")
     for func_typedef in FUNC_TYPEDEFS:
@@ -407,8 +410,8 @@ typedef void* DynamicLibrary;
 #  define dynamic_library_open(path)         dlopen(path, RTLD_NOW)
 #  define dynamic_library_close(lib)         dlclose(lib)
 #  define dynamic_library_find(lib, symbol)  dlsym(lib, symbol)
-#endif""")
-    print("")
+#endif
+""")
 
 
 def print_dl_helper_macro():
