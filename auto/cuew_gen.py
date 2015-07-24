@@ -399,7 +399,7 @@ def print_dl_wrapper():
 
 typedef HMODULE DynamicLibrary;
 
-#  define dynamic_library_open(path)         LoadLibrary(path)
+#  define dynamic_library_open(path)         LoadLibraryA(path)
 #  define dynamic_library_close(lib)         FreeLibrary(lib)
 #  define dynamic_library_find(lib, symbol)  GetProcAddress(lib, symbol)
 #else
