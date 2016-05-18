@@ -96,7 +96,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         elif isinstance(node, c_ast.TypeDecl):
             return self._get_ident_type(node.type)
         else:
-            return node.names[0]
+            return ' '.join(node.names)
 
     def _stringify_param(self, param):
         param_type = param.type
@@ -569,7 +569,9 @@ def print_implementation():
 
     # TODO(sergey): Get rid of hardcoded header.
     print("""#ifdef _MSC_VER
-#  define snprintf _snprintf
+#  if _MSC_VER < 1900
+#    define snprintf _snprintf
+#  endif
 #  define popen _popen
 #  define pclose _pclose
 #  define _CRT_SECURE_NO_WARNINGS
