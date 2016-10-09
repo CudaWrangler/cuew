@@ -603,7 +603,7 @@ const char *cuewErrorString(CUresult result) {
   switch(result) {
     case CUDA_SUCCESS: return "No errors";
     case CUDA_ERROR_INVALID_VALUE: return "Invalid value";
-    case CUDA_ERROR_OUT_OF_MEMORY: return "Out of memory";
+    case CUDA_ERROR_OUT_OF_MEMORY: return "GPU out of memory";
     case CUDA_ERROR_NOT_INITIALIZED: return "Driver not initialized";
     case CUDA_ERROR_DEINITIALIZED: return "Driver deinitialized";
     case CUDA_ERROR_PROFILER_DISABLED: return "Profiler disabled";
