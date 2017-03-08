@@ -349,7 +349,7 @@ def print_header():
 
     # We handle this specially because of the file is
     # getting preprocessed.
-    print("""#if defined(__x86_64) || defined(AMD64) || defined(_M_AMD64)
+    print("""#if defined(__x86_64) || defined(AMD64) || defined(_M_AMD64) || defined (__aarch64__)
 typedef unsigned long long CUdeviceptr;
 #else
 typedef unsigned int CUdeviceptr;
