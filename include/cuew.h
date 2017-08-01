@@ -749,8 +749,8 @@ typedef struct _nvrtcProgram* nvrtcProgram;
 #endif
 
 /* Function types. */
-typedef CUresult CUDAAPI tcuGetErrorString(CUresult error, const char* pStr);
-typedef CUresult CUDAAPI tcuGetErrorName(CUresult error, const char* pStr);
+typedef CUresult CUDAAPI tcuGetErrorString(CUresult error, const char** pStr);
+typedef CUresult CUDAAPI tcuGetErrorName(CUresult error, const char** pStr);
 typedef CUresult CUDAAPI tcuInit(unsigned int Flags);
 typedef CUresult CUDAAPI tcuDriverGetVersion(int* driverVersion);
 typedef CUresult CUDAAPI tcuDeviceGet(CUdevice* device, int ordinal);
@@ -963,7 +963,7 @@ typedef const char* CUDAAPI tnvrtcGetErrorString(nvrtcResult result);
 typedef nvrtcResult CUDAAPI tnvrtcVersion(int* major, int* minor);
 typedef nvrtcResult CUDAAPI tnvrtcCreateProgram(nvrtcProgram* prog, const char* src, const char* name, int numHeaders, const char* headers, const char* includeNames);
 typedef nvrtcResult CUDAAPI tnvrtcDestroyProgram(nvrtcProgram* prog);
-typedef nvrtcResult CUDAAPI tnvrtcCompileProgram(nvrtcProgram prog, int numOptions, const char* options);
+typedef nvrtcResult CUDAAPI tnvrtcCompileProgram(nvrtcProgram prog, int numOptions, const char** options);
 typedef nvrtcResult CUDAAPI tnvrtcGetPTXSize(nvrtcProgram prog, size_t* ptxSizeRet);
 typedef nvrtcResult CUDAAPI tnvrtcGetPTX(nvrtcProgram prog, char* ptx);
 typedef nvrtcResult CUDAAPI tnvrtcGetProgramLogSize(nvrtcProgram prog, size_t* logSizeRet);
