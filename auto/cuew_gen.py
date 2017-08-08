@@ -90,7 +90,11 @@ class FuncDefVisitor(c_ast.NodeVisitor):
             self.indent += 1
             union = self._stringify_struct(node)
             self.indent -= 1
-            return "union {\n" + union + ("  " * self.indent) + "}"
+            result = "union "
+            if node.name:
+                result += node.name + " "
+            result += "{\n" + union + ("  " * self.indent) + "}"
+            return result
         elif isinstance(node, c_ast.Enum):
             if node.name is not None:
                 return 'enum ' + node.name
@@ -110,8 +114,19 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         param_type = param.type
         result = self._get_quals_string(param)
         result += self._get_ident_type(param_type)
+
+        if isinstance(param_type, c_ast.TypeDecl):
+            param_type_type = param_type.type
+            if isinstance(param_type_type, c_ast.Struct):
+                if param_type_type.name:
+                    self.indent += 1
+                    result += " {\n" + self._stringify_struct(param_type_type) +\
+                               ("  " * (self.indent - 1) + "}")
+                    self.indent -= 1
+
         if param.name:
             result += ' ' + param.name
+
         if isinstance(param_type, c_ast.ArrayDecl):
             # TODO(sergey): Workaround to deal with the
             # preprocessed file where array size got
