@@ -207,10 +207,14 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
 def get_latest_cpp():
     path_prefix = "/usr/bin"
-    for cpp_version in ["9", "8", "7", "6", "5", "4"]:
-        test_cpp = os.path.join(path_prefix, "cpp-4." + cpp_version)
-        if os.path.exists(test_cpp):
-            return test_cpp
+    for major in ("9", "8", "7", "6", "5", "4"):
+        for minor in (".9", ".8", ".7", ".6", ".5", ".4", ".3", ".2", ".1", ""):
+            test_cpp = os.path.join(path_prefix, "cpp-{}".format(major, minor))
+            if os.path.exists(test_cpp):
+                return test_cpp
+    default_cpp = os.path.join(path_prefix, "cpp")
+    if os.path.exists(default_cpp):
+        return default_cpp
     return None
 
 
