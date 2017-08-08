@@ -136,8 +136,14 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                 enumerators = child[1].enumerators
                 for enumerator in enumerators:
                     result += ("  " * self.indent) + enumerator.name
-                    if enumerator.value:
-                        result += " = " + enumerator.value.value
+                    value = enumerator.value
+                    value_type = value.__class__.__name__
+                    if value_type == "Constant":
+                        result += " = " + value.value
+                    elif value_type == "BinaryOp":
+                        result += " = ({} {} {})".format(value.left.value,
+                                                         value.op,
+                                                         value.right.value)
                     result += ",\n"
                     if enumerator.name.startswith("CUDA_ERROR_"):
                         ERRORS.append(enumerator.name)
