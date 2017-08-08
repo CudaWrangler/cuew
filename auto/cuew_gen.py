@@ -71,7 +71,10 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
     def _get_ident_type(self, node):
         if isinstance(node, c_ast.PtrDecl):
-            return self._get_ident_type(node.type.type) + '*'
+            result = self._get_ident_type(node.type)
+            if not isinstance(node.type, c_ast.FuncDecl):
+                result += "*"
+            return result
         if isinstance(node, c_ast.ArrayDecl):
             return self._get_ident_type(node.type)
         elif isinstance(node, c_ast.Struct):
@@ -95,6 +98,11 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                 return 'enum '
         elif isinstance(node, c_ast.TypeDecl):
             return self._get_ident_type(node.type)
+        elif isinstance(node, c_ast.FuncDecl):
+            return "{} (CUDA_CB *{})({})" .format(
+                    self._get_ident_type(node.type),
+                    node.type.declname,
+                    self._stringify_params(node.args.params))
         else:
             return ' '.join(node.names)
 
@@ -199,6 +207,8 @@ class FuncDefVisitor(c_ast.NodeVisitor):
             self.indent -= 1
             typedef = quals + type + " {\n" + enum + "} " + node.name
             complex = True
+        elif isinstance(node.type.type, c_ast.FuncDecl):
+            typedef = type
         else:
             typedef = quals + type + " " + node.name
         if complex or self.prev_complex:
@@ -366,9 +376,6 @@ typedef unsigned int CUdeviceptr;
 #endif
 """)
 
-    for typedef in TYPEDEFS:
-        print('%s' % (typedef))
-
     # TDO(sergey): This is only specific to CUDA wrapper.
     print("""
 #ifdef _WIN32
@@ -379,6 +386,9 @@ typedef unsigned int CUdeviceptr;
 #  define CUDA_CB
 #endif
 """)
+
+    for typedef in TYPEDEFS:
+        print('%s' % (typedef))
 
     print("/* Function types. */")
     for func_typedef in FUNC_TYPEDEFS:
