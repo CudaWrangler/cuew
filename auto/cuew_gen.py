@@ -504,7 +504,7 @@ def print_dl_helpers():
 }
 
 static void %sExit(void) {
-  if(cuda_lib != NULL) {
+  if (cuda_lib != NULL) {
     /*  Ignore errors. */
     dynamic_library_close(cuda_lib);
     cuda_lib = NULL;
@@ -649,7 +649,7 @@ def print_implementation():
     print("")
     # TODO(sergey): Get rid of hardcoded CUresult.
     print("const char *%sErrorString(CUresult result) {" % (LIB.lower()))
-    print("  switch(result) {")
+    print("  switch (result) {")
     print("    case CUDA_SUCCESS: return \"No errors\";")
 
     for error in ERRORS:

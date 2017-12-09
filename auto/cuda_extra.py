@@ -49,14 +49,16 @@ const char *cuewCompilerPath(void) {
 
   if (binpath) {
     path_join(binpath, executable, sizeof(nvcc), nvcc);
-    if (path_exists(nvcc))
+    if (path_exists(nvcc)) {
       return nvcc;
+    }
   }
 
   for (i = 0; defaultpaths[i]; ++i) {
     path_join(defaultpaths[i], executable, sizeof(nvcc), nvcc);
-    if (path_exists(nvcc))
+    if (path_exists(nvcc)) {
       return nvcc;
+    }
   }
 
 #ifndef _WIN32
@@ -67,9 +69,9 @@ const char *cuewCompilerPath(void) {
       int len = fread(buffer, 1, sizeof(buffer) - 1, handle);
       buffer[len] = '\\0';
       pclose(handle);
-
-      if (buffer[0])
+      if (buffer[0]) {
         return "nvcc";
+      }
     }
   }
 #endif
@@ -87,8 +89,9 @@ int cuewCompilerVersion(void) {
   char output[65536] = "\\0";
   char command[65536] = "\\0";
 
-  if (path == NULL)
+  if (path == NULL) {
     return 0;
+  }
 
   /* get --version output */
   strncpy(command, path, sizeof(command));
