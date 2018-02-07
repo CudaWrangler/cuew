@@ -24,8 +24,8 @@ extern "C" {
 #include <stdlib.h>
 
 /* Defines. */
-#define CUEW_VERSION_MAJOR 1
-#define CUEW_VERSION_MINOR 2
+#define CUEW_VERSION_MAJOR 2
+#define CUEW_VERSION_MINOR 0
 
 %DEFINES%
 
