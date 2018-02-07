@@ -334,7 +334,7 @@ int cuewInit(void) {
 #ifdef _WIN32
   /* Expected in c:/windows/system or similar, no path needed. */
   const char *cuda_paths[] = {"nvcuda.dll", NULL};
-  const char *nvrtc_paths[] = {"nvrtc.dll", NULL};
+  const char *nvrtc_paths[] = {"nvrtc64_80.dll", "nvrtc64_90.dll", "nvrtc64_91.dll", NULL};
 #elif defined(__APPLE__)
   /* Default installation path. */
   const char *cuda_paths[] = {"/usr/local/cuda/lib/libcuda.dylib", NULL};
