@@ -780,6 +780,15 @@ const char *cuewCompilerPath(void) {
   return NULL;
 }
 
+int cuewNvrtcVersion(void) {
+  int major, minor;
+  if (nvrtcVersion) {
+    nvrtcVersion(&major, &minor);
+    return 10 * major + minor;
+  }
+  return 0;
+}
+
 int cuewCompilerVersion(void) {
   const char *path = cuewCompilerPath();
   const char *marker = "Cuda compilation tools, release ";
