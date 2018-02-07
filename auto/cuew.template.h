@@ -77,7 +77,12 @@ enum {
   CUEW_ERROR_ATEXIT_FAILED = -2,
 };
 
-int cuewInit(void);
+enum {
+	CUEW_INIT_CUDA = 1,
+	CUEW_INIT_NVRTC = 2
+};
+
+int cuewInit(cuuint32_t flags);
 const char *cuewErrorString(CUresult result);
 const char *cuewCompilerPath(void);
 int cuewCompilerVersion(void);

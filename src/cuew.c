@@ -320,7 +320,8 @@ static DynamicLibrary dynamic_library_open_find(const char **paths) {
   return NULL;
 }
 
-static void cuewExit(void) {
+/* Implementation function. */
+static void cuewCudaExit(void) {
   if (cuda_lib != NULL) {
     /*  Ignore errors. */
     dynamic_library_close(cuda_lib);
@@ -328,26 +329,16 @@ static void cuewExit(void) {
   }
 }
 
-/* Implementation function. */
-int cuewInit(void) {
+static int cuewCudaInit(void) {
   /* Library paths. */
 #ifdef _WIN32
   /* Expected in c:/windows/system or similar, no path needed. */
   const char *cuda_paths[] = {"nvcuda.dll", NULL};
-  const char *nvrtc_paths[] = {"nvrtc64_80.dll", "nvrtc64_90.dll", "nvrtc64_91.dll", NULL};
 #elif defined(__APPLE__)
   /* Default installation path. */
   const char *cuda_paths[] = {"/usr/local/cuda/lib/libcuda.dylib", NULL};
-  const char *nvrtc_paths[] = {"/usr/local/cuda/lib/libnvrtc.dylib", NULL};
 #else
   const char *cuda_paths[] = {"libcuda.so", NULL};
-  const char *nvrtc_paths[] = {"libnvrtc.so",
-#  if defined(__x86_64__) || defined(_M_X64)
-                               "/usr/local/cuda/lib64/libnvrtc.so",
-#else
-                               "/usr/local/cuda/lib/libnvrtc.so",
-#endif
-                               NULL};
 #endif
   static int initialized = 0;
   static int result = 0;
@@ -359,7 +350,7 @@ int cuewInit(void) {
 
   initialized = 1;
 
-  error = atexit(cuewExit);
+  error = atexit(cuewCudaExit);
   if (error) {
     result = CUEW_ERROR_ATEXIT_FAILED;
     return result;
@@ -367,9 +358,7 @@ int cuewInit(void) {
 
   /* Load library. */
   cuda_lib = dynamic_library_open_find(cuda_paths);
-  nvrtc_lib = dynamic_library_open_find(nvrtc_paths);
 
-  /* CUDA library is mandatory to have, while nvrtc might be missing. */
   if (cuda_lib == NULL) {
     result = CUEW_ERROR_OPEN_FAILED;
     return result;
@@ -614,24 +603,96 @@ int cuewInit(void) {
   CUDA_LIBRARY_FIND(cuGLMapBufferObjectAsync_v2);
   CUDA_LIBRARY_FIND(cuGLUnmapBufferObjectAsync);
 
+  result = CUEW_SUCCESS;
+  return result;
+}
 
+static void cuewExitNvrtc(void) {
   if (nvrtc_lib != NULL) {
-    NVRTC_LIBRARY_FIND(nvrtcGetErrorString);
-    NVRTC_LIBRARY_FIND(nvrtcVersion);
-    NVRTC_LIBRARY_FIND(nvrtcCreateProgram);
-    NVRTC_LIBRARY_FIND(nvrtcDestroyProgram);
-    NVRTC_LIBRARY_FIND(nvrtcCompileProgram);
-    NVRTC_LIBRARY_FIND(nvrtcGetPTXSize);
-    NVRTC_LIBRARY_FIND(nvrtcGetPTX);
-    NVRTC_LIBRARY_FIND(nvrtcGetProgramLogSize);
-    NVRTC_LIBRARY_FIND(nvrtcGetProgramLog);
-    NVRTC_LIBRARY_FIND(nvrtcAddNameExpression);
-    NVRTC_LIBRARY_FIND(nvrtcGetLoweredName);
+    /*  Ignore errors. */
+    dynamic_library_close(nvrtc_lib);
+    nvrtc_lib = NULL;
   }
+}
+
+static int cuewNvrtcInit(void) {
+  /* Library paths. */
+#ifdef _WIN32
+  /* Expected in c:/windows/system or similar, no path needed. */
+  const char *nvrtc_paths[] = {"nvrtc64_80.dll", "nvrtc64_90.dll", "nvrtc64_91.dll", NULL};
+#elif defined(__APPLE__)
+  /* Default installation path. */
+  const char *nvrtc_paths[] = {"/usr/local/cuda/lib/libnvrtc.dylib", NULL};
+#else
+  const char *nvrtc_paths[] = {"libnvrtc.so",
+#  if defined(__x86_64__) || defined(_M_X64)
+                               "/usr/local/cuda/lib64/libnvrtc.so",
+#else
+                               "/usr/local/cuda/lib/libnvrtc.so",
+#endif
+                               NULL};
+#endif
+  static int initialized = 0;
+  static int result = 0;
+  int error;
+
+  if (initialized) {
+    return result;
+  }
+
+  initialized = 1;
+
+  error = atexit(cuewExitNvrtc);
+  if (error) {
+    result = CUEW_ERROR_ATEXIT_FAILED;
+    return result;
+  }
+
+  /* Load library. */
+  nvrtc_lib = dynamic_library_open_find(nvrtc_paths);
+
+  if (nvrtc_lib == NULL) {
+    result = CUEW_ERROR_OPEN_FAILED;
+    return result;
+  }
+
+  NVRTC_LIBRARY_FIND(nvrtcGetErrorString);
+  NVRTC_LIBRARY_FIND(nvrtcVersion);
+  NVRTC_LIBRARY_FIND(nvrtcCreateProgram);
+  NVRTC_LIBRARY_FIND(nvrtcDestroyProgram);
+  NVRTC_LIBRARY_FIND(nvrtcCompileProgram);
+  NVRTC_LIBRARY_FIND(nvrtcGetPTXSize);
+  NVRTC_LIBRARY_FIND(nvrtcGetPTX);
+  NVRTC_LIBRARY_FIND(nvrtcGetProgramLogSize);
+  NVRTC_LIBRARY_FIND(nvrtcGetProgramLog);
+  NVRTC_LIBRARY_FIND(nvrtcAddNameExpression);
+  NVRTC_LIBRARY_FIND(nvrtcGetLoweredName);
 
   result = CUEW_SUCCESS;
   return result;
 }
+
+
+int cuewInit(cuuint32_t flags) {
+	int result = CUEW_SUCCESS;
+
+	if (flags & CUEW_INIT_CUDA) {
+		result = cuewCudaInit();
+		if (result != CUEW_SUCCESS) {
+			return result;
+		}
+	}
+
+	if (flags & CUEW_INIT_NVRTC) {
+		result = cuewNvrtcInit();
+		if (result != CUEW_SUCCESS) {
+			return result;
+		}
+	}
+
+	return result;
+}
+
 
 const char *cuewErrorString(CUresult result) {
   switch (result) {

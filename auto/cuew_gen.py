@@ -379,7 +379,7 @@ def print_implementation():
     lib_find_nvrtc = ''
     for symbol in SYMBOLS:
         if symbol and symbol.startswith('nvrtc'):
-            lib_find_nvrtc += "    NVRTC_LIBRARY_FIND(%s);\n" % (symbol)
+            lib_find_nvrtc += "  NVRTC_LIBRARY_FIND(%s);\n" % (symbol)
 
     source = source.replace('%FUNCTION_DEFINITIONS%', function_definitions.rstrip())
     source = source.replace('%CUDA_ERRORS%', cuda_errors.rstrip())
