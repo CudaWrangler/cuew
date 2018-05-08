@@ -51,7 +51,6 @@ typedef unsigned long long CUdeviceptr;
 typedef unsigned int CUdeviceptr;
 #endif
 
-
 #ifdef _WIN32
 #  define CUDAAPI __stdcall
 #  define CUDA_CB __stdcall
@@ -59,6 +58,14 @@ typedef unsigned int CUdeviceptr;
 #  define CUDAAPI
 #  define CUDA_CB
 #endif
+
+#if !defined(__CUDACC__)
+#  define __device_builtin__
+#else
+#  define __device_builtin__ __location__(device_builtin)
+#endif
+
+typedef __device_builtin__ struct CUstream_st *cudaStream_t;
 
 %TYPEDEFS%
 
@@ -78,8 +85,9 @@ enum {
 };
 
 enum {
-	CUEW_INIT_CUDA = 1,
-	CUEW_INIT_NVRTC = 2
+	CUEW_INIT_CUDA  = (1 << 0),
+	CUEW_INIT_NVRTC = (1 << 1),
+	CUEW_INIT_CUDNN = (1 << 2),
 };
 
 int cuewInit(cuuint32_t flags);
