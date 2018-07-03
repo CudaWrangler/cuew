@@ -233,6 +233,7 @@ def get_latest_cpp():
 
 def preprocess_file(filename, cpp_path):
     args = [cpp_path, "-I./"]
+    args.append("-DCUDA_ENABLE_DEPRECATED=1 ")
     if filename.endswith("GL.h"):
         args.append("-DCUDAAPI= ")
     args.append(filename)
@@ -290,7 +291,9 @@ def parse_files():
                                         "CUDA_CB",
                                         "CUDAAPI",
                                         "CUDAGL_H",
-                                        "__NVRTC_H__"):
+                                        "__NVRTC_H__",
+                                        "CUDA_ENABLE_DEPRECATED",
+                                        "__CUDA_DEPRECATED"):
                         DEFINES.append(token)
 
             for line in lines:
