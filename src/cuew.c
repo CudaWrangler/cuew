@@ -623,7 +623,11 @@ static int cuewNvrtcInit(void) {
   /* Library paths. */
 #ifdef _WIN32
   /* Expected in c:/windows/system or similar, no path needed. */
-  const char *nvrtc_paths[] = {"nvrtc64_80.dll", "nvrtc64_90.dll", "nvrtc64_91.dll", "nvrtc64_92.dll", NULL};
+  const char *nvrtc_paths[] = {"nvrtc64_80.dll",
+                               "nvrtc64_90.dll",
+                               "nvrtc64_91.dll",
+                               "nvrtc64_92.dll",
+                               NULL};
 #elif defined(__APPLE__)
   /* Default installation path. */
   const char *nvrtc_paths[] = {"/usr/local/cuda/lib/libnvrtc.dylib", NULL};
