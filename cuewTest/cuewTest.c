@@ -30,5 +30,16 @@ int main(int argc, char* argv[]) {
     printf("NVRTC not found\n");
   }
 
+  if (cuewInit(CUEW_INIT_CUDNN) == CUEW_SUCCESS) {
+    printf("CUDNN found\n");
+    size_t version = cudnnGetVersion();
+    printf("Found Deep Neural Network library version %d.%d\n",
+           version / 1000,
+           version % 1000);
+  }
+  else {
+    printf("CUDNN not found\n");
+  }
+
   return EXIT_SUCCESS;
 }

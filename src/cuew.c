@@ -66,8 +66,13 @@ typedef void* DynamicLibrary;
         _LIBRARY_FIND_CHECKED(nvrtc_lib, name)
 #define NVRTC_LIBRARY_FIND(name) _LIBRARY_FIND(nvrtc_lib, name)
 
+#define CUDNN_LIBRARY_FIND_CHECKED(name) \
+        _LIBRARY_FIND_CHECKED(cudnn_lib, name)
+#define CUDNN_LIBRARY_FIND(name) _LIBRARY_FIND(cudnn_lib, name)
+
 static DynamicLibrary cuda_lib;
 static DynamicLibrary nvrtc_lib;
+static DynamicLibrary cudnn_lib;
 
 /* Function definitions. */
 tcuGetErrorString *cuGetErrorString;
@@ -308,6 +313,180 @@ tnvrtcGetProgramLogSize *nvrtcGetProgramLogSize;
 tnvrtcGetProgramLog *nvrtcGetProgramLog;
 tnvrtcAddNameExpression *nvrtcAddNameExpression;
 tnvrtcGetLoweredName *nvrtcGetLoweredName;
+
+tcudnnGetVersion *cudnnGetVersion;
+tcudnnGetCudartVersion *cudnnGetCudartVersion;
+tcudnnGetErrorString *cudnnGetErrorString;
+tcudnnQueryRuntimeError *cudnnQueryRuntimeError;
+tcudnnGetProperty *cudnnGetProperty;
+tcudnnCreate *cudnnCreate;
+tcudnnDestroy *cudnnDestroy;
+tcudnnSetStream *cudnnSetStream;
+tcudnnGetStream *cudnnGetStream;
+tcudnnCreateTensorDescriptor *cudnnCreateTensorDescriptor;
+tcudnnSetTensor4dDescriptor *cudnnSetTensor4dDescriptor;
+tcudnnSetTensor4dDescriptorEx *cudnnSetTensor4dDescriptorEx;
+tcudnnGetTensor4dDescriptor *cudnnGetTensor4dDescriptor;
+tcudnnSetTensorNdDescriptor *cudnnSetTensorNdDescriptor;
+tcudnnSetTensorNdDescriptorEx *cudnnSetTensorNdDescriptorEx;
+tcudnnGetTensorNdDescriptor *cudnnGetTensorNdDescriptor;
+tcudnnGetTensorSizeInBytes *cudnnGetTensorSizeInBytes;
+tcudnnDestroyTensorDescriptor *cudnnDestroyTensorDescriptor;
+tcudnnTransformTensor *cudnnTransformTensor;
+tcudnnAddTensor *cudnnAddTensor;
+tcudnnCreateOpTensorDescriptor *cudnnCreateOpTensorDescriptor;
+tcudnnSetOpTensorDescriptor *cudnnSetOpTensorDescriptor;
+tcudnnGetOpTensorDescriptor *cudnnGetOpTensorDescriptor;
+tcudnnDestroyOpTensorDescriptor *cudnnDestroyOpTensorDescriptor;
+tcudnnOpTensor *cudnnOpTensor;
+tcudnnCreateReduceTensorDescriptor *cudnnCreateReduceTensorDescriptor;
+tcudnnSetReduceTensorDescriptor *cudnnSetReduceTensorDescriptor;
+tcudnnGetReduceTensorDescriptor *cudnnGetReduceTensorDescriptor;
+tcudnnDestroyReduceTensorDescriptor *cudnnDestroyReduceTensorDescriptor;
+tcudnnGetReductionIndicesSize *cudnnGetReductionIndicesSize;
+tcudnnGetReductionWorkspaceSize *cudnnGetReductionWorkspaceSize;
+tcudnnReduceTensor *cudnnReduceTensor;
+tcudnnSetTensor *cudnnSetTensor;
+tcudnnScaleTensor *cudnnScaleTensor;
+tcudnnCreateFilterDescriptor *cudnnCreateFilterDescriptor;
+tcudnnSetFilter4dDescriptor *cudnnSetFilter4dDescriptor;
+tcudnnGetFilter4dDescriptor *cudnnGetFilter4dDescriptor;
+tcudnnSetFilterNdDescriptor *cudnnSetFilterNdDescriptor;
+tcudnnGetFilterNdDescriptor *cudnnGetFilterNdDescriptor;
+tcudnnDestroyFilterDescriptor *cudnnDestroyFilterDescriptor;
+tcudnnCreateConvolutionDescriptor *cudnnCreateConvolutionDescriptor;
+tcudnnSetConvolutionMathType *cudnnSetConvolutionMathType;
+tcudnnGetConvolutionMathType *cudnnGetConvolutionMathType;
+tcudnnSetConvolutionGroupCount *cudnnSetConvolutionGroupCount;
+tcudnnGetConvolutionGroupCount *cudnnGetConvolutionGroupCount;
+tcudnnSetConvolution2dDescriptor *cudnnSetConvolution2dDescriptor;
+tcudnnGetConvolution2dDescriptor *cudnnGetConvolution2dDescriptor;
+tcudnnGetConvolution2dForwardOutputDim *cudnnGetConvolution2dForwardOutputDim;
+tcudnnSetConvolutionNdDescriptor *cudnnSetConvolutionNdDescriptor;
+tcudnnGetConvolutionNdDescriptor *cudnnGetConvolutionNdDescriptor;
+tcudnnGetConvolutionNdForwardOutputDim *cudnnGetConvolutionNdForwardOutputDim;
+tcudnnDestroyConvolutionDescriptor *cudnnDestroyConvolutionDescriptor;
+tcudnnGetConvolutionForwardAlgorithmMaxCount *cudnnGetConvolutionForwardAlgorithmMaxCount;
+tcudnnFindConvolutionForwardAlgorithm *cudnnFindConvolutionForwardAlgorithm;
+tcudnnFindConvolutionForwardAlgorithmEx *cudnnFindConvolutionForwardAlgorithmEx;
+tcudnnGetConvolutionForwardAlgorithm *cudnnGetConvolutionForwardAlgorithm;
+tcudnnGetConvolutionForwardAlgorithm_v7 *cudnnGetConvolutionForwardAlgorithm_v7;
+tcudnnGetConvolutionForwardWorkspaceSize *cudnnGetConvolutionForwardWorkspaceSize;
+tcudnnConvolutionForward *cudnnConvolutionForward;
+tcudnnConvolutionBiasActivationForward *cudnnConvolutionBiasActivationForward;
+tcudnnConvolutionBackwardBias *cudnnConvolutionBackwardBias;
+tcudnnGetConvolutionBackwardFilterAlgorithmMaxCount *cudnnGetConvolutionBackwardFilterAlgorithmMaxCount;
+tcudnnFindConvolutionBackwardFilterAlgorithm *cudnnFindConvolutionBackwardFilterAlgorithm;
+tcudnnFindConvolutionBackwardFilterAlgorithmEx *cudnnFindConvolutionBackwardFilterAlgorithmEx;
+tcudnnGetConvolutionBackwardFilterAlgorithm *cudnnGetConvolutionBackwardFilterAlgorithm;
+tcudnnGetConvolutionBackwardFilterAlgorithm_v7 *cudnnGetConvolutionBackwardFilterAlgorithm_v7;
+tcudnnGetConvolutionBackwardFilterWorkspaceSize *cudnnGetConvolutionBackwardFilterWorkspaceSize;
+tcudnnConvolutionBackwardFilter *cudnnConvolutionBackwardFilter;
+tcudnnGetConvolutionBackwardDataAlgorithmMaxCount *cudnnGetConvolutionBackwardDataAlgorithmMaxCount;
+tcudnnFindConvolutionBackwardDataAlgorithm *cudnnFindConvolutionBackwardDataAlgorithm;
+tcudnnFindConvolutionBackwardDataAlgorithmEx *cudnnFindConvolutionBackwardDataAlgorithmEx;
+tcudnnGetConvolutionBackwardDataAlgorithm *cudnnGetConvolutionBackwardDataAlgorithm;
+tcudnnGetConvolutionBackwardDataAlgorithm_v7 *cudnnGetConvolutionBackwardDataAlgorithm_v7;
+tcudnnGetConvolutionBackwardDataWorkspaceSize *cudnnGetConvolutionBackwardDataWorkspaceSize;
+tcudnnConvolutionBackwardData *cudnnConvolutionBackwardData;
+tcudnnIm2Col *cudnnIm2Col;
+tcudnnSoftmaxForward *cudnnSoftmaxForward;
+tcudnnSoftmaxBackward *cudnnSoftmaxBackward;
+tcudnnCreatePoolingDescriptor *cudnnCreatePoolingDescriptor;
+tcudnnSetPooling2dDescriptor *cudnnSetPooling2dDescriptor;
+tcudnnGetPooling2dDescriptor *cudnnGetPooling2dDescriptor;
+tcudnnSetPoolingNdDescriptor *cudnnSetPoolingNdDescriptor;
+tcudnnGetPoolingNdDescriptor *cudnnGetPoolingNdDescriptor;
+tcudnnGetPoolingNdForwardOutputDim *cudnnGetPoolingNdForwardOutputDim;
+tcudnnGetPooling2dForwardOutputDim *cudnnGetPooling2dForwardOutputDim;
+tcudnnDestroyPoolingDescriptor *cudnnDestroyPoolingDescriptor;
+tcudnnPoolingForward *cudnnPoolingForward;
+tcudnnPoolingBackward *cudnnPoolingBackward;
+tcudnnCreateActivationDescriptor *cudnnCreateActivationDescriptor;
+tcudnnSetActivationDescriptor *cudnnSetActivationDescriptor;
+tcudnnGetActivationDescriptor *cudnnGetActivationDescriptor;
+tcudnnDestroyActivationDescriptor *cudnnDestroyActivationDescriptor;
+tcudnnActivationForward *cudnnActivationForward;
+tcudnnActivationBackward *cudnnActivationBackward;
+tcudnnCreateLRNDescriptor *cudnnCreateLRNDescriptor;
+tcudnnSetLRNDescriptor *cudnnSetLRNDescriptor;
+tcudnnGetLRNDescriptor *cudnnGetLRNDescriptor;
+tcudnnDestroyLRNDescriptor *cudnnDestroyLRNDescriptor;
+tcudnnLRNCrossChannelForward *cudnnLRNCrossChannelForward;
+tcudnnLRNCrossChannelBackward *cudnnLRNCrossChannelBackward;
+tcudnnDivisiveNormalizationForward *cudnnDivisiveNormalizationForward;
+tcudnnDivisiveNormalizationBackward *cudnnDivisiveNormalizationBackward;
+tcudnnDeriveBNTensorDescriptor *cudnnDeriveBNTensorDescriptor;
+tcudnnBatchNormalizationForwardTraining *cudnnBatchNormalizationForwardTraining;
+tcudnnBatchNormalizationForwardInference *cudnnBatchNormalizationForwardInference;
+tcudnnBatchNormalizationBackward *cudnnBatchNormalizationBackward;
+tcudnnCreateSpatialTransformerDescriptor *cudnnCreateSpatialTransformerDescriptor;
+tcudnnSetSpatialTransformerNdDescriptor *cudnnSetSpatialTransformerNdDescriptor;
+tcudnnDestroySpatialTransformerDescriptor *cudnnDestroySpatialTransformerDescriptor;
+tcudnnSpatialTfGridGeneratorForward *cudnnSpatialTfGridGeneratorForward;
+tcudnnSpatialTfGridGeneratorBackward *cudnnSpatialTfGridGeneratorBackward;
+tcudnnSpatialTfSamplerForward *cudnnSpatialTfSamplerForward;
+tcudnnSpatialTfSamplerBackward *cudnnSpatialTfSamplerBackward;
+tcudnnCreateDropoutDescriptor *cudnnCreateDropoutDescriptor;
+tcudnnDestroyDropoutDescriptor *cudnnDestroyDropoutDescriptor;
+tcudnnDropoutGetStatesSize *cudnnDropoutGetStatesSize;
+tcudnnDropoutGetReserveSpaceSize *cudnnDropoutGetReserveSpaceSize;
+tcudnnSetDropoutDescriptor *cudnnSetDropoutDescriptor;
+tcudnnRestoreDropoutDescriptor *cudnnRestoreDropoutDescriptor;
+tcudnnGetDropoutDescriptor *cudnnGetDropoutDescriptor;
+tcudnnDropoutForward *cudnnDropoutForward;
+tcudnnDropoutBackward *cudnnDropoutBackward;
+tcudnnCreateRNNDescriptor *cudnnCreateRNNDescriptor;
+tcudnnDestroyRNNDescriptor *cudnnDestroyRNNDescriptor;
+tcudnnGetRNNForwardInferenceAlgorithmMaxCount *cudnnGetRNNForwardInferenceAlgorithmMaxCount;
+tcudnnFindRNNForwardInferenceAlgorithmEx *cudnnFindRNNForwardInferenceAlgorithmEx;
+tcudnnGetRNNForwardTrainingAlgorithmMaxCount *cudnnGetRNNForwardTrainingAlgorithmMaxCount;
+tcudnnFindRNNForwardTrainingAlgorithmEx *cudnnFindRNNForwardTrainingAlgorithmEx;
+tcudnnGetRNNBackwardDataAlgorithmMaxCount *cudnnGetRNNBackwardDataAlgorithmMaxCount;
+tcudnnFindRNNBackwardDataAlgorithmEx *cudnnFindRNNBackwardDataAlgorithmEx;
+tcudnnGetRNNBackwardWeightsAlgorithmMaxCount *cudnnGetRNNBackwardWeightsAlgorithmMaxCount;
+tcudnnFindRNNBackwardWeightsAlgorithmEx *cudnnFindRNNBackwardWeightsAlgorithmEx;
+tcudnnCreatePersistentRNNPlan *cudnnCreatePersistentRNNPlan;
+tcudnnSetPersistentRNNPlan *cudnnSetPersistentRNNPlan;
+tcudnnDestroyPersistentRNNPlan *cudnnDestroyPersistentRNNPlan;
+tcudnnSetRNNDescriptor *cudnnSetRNNDescriptor;
+tcudnnSetRNNProjectionLayers *cudnnSetRNNProjectionLayers;
+tcudnnGetRNNProjectionLayers *cudnnGetRNNProjectionLayers;
+tcudnnSetRNNAlgorithmDescriptor *cudnnSetRNNAlgorithmDescriptor;
+tcudnnGetRNNDescriptor *cudnnGetRNNDescriptor;
+tcudnnSetRNNMatrixMathType *cudnnSetRNNMatrixMathType;
+tcudnnGetRNNMatrixMathType *cudnnGetRNNMatrixMathType;
+tcudnnGetRNNWorkspaceSize *cudnnGetRNNWorkspaceSize;
+tcudnnGetRNNTrainingReserveSize *cudnnGetRNNTrainingReserveSize;
+tcudnnGetRNNParamsSize *cudnnGetRNNParamsSize;
+tcudnnGetRNNLinLayerMatrixParams *cudnnGetRNNLinLayerMatrixParams;
+tcudnnGetRNNLinLayerBiasParams *cudnnGetRNNLinLayerBiasParams;
+tcudnnRNNForwardInference *cudnnRNNForwardInference;
+tcudnnRNNForwardTraining *cudnnRNNForwardTraining;
+tcudnnRNNBackwardData *cudnnRNNBackwardData;
+tcudnnRNNBackwardWeights *cudnnRNNBackwardWeights;
+tcudnnCreateCTCLossDescriptor *cudnnCreateCTCLossDescriptor;
+tcudnnSetCTCLossDescriptor *cudnnSetCTCLossDescriptor;
+tcudnnGetCTCLossDescriptor *cudnnGetCTCLossDescriptor;
+tcudnnDestroyCTCLossDescriptor *cudnnDestroyCTCLossDescriptor;
+tcudnnCTCLoss *cudnnCTCLoss;
+tcudnnGetCTCLossWorkspaceSize *cudnnGetCTCLossWorkspaceSize;
+tcudnnCreateAlgorithmDescriptor *cudnnCreateAlgorithmDescriptor;
+tcudnnSetAlgorithmDescriptor *cudnnSetAlgorithmDescriptor;
+tcudnnGetAlgorithmDescriptor *cudnnGetAlgorithmDescriptor;
+tcudnnCopyAlgorithmDescriptor *cudnnCopyAlgorithmDescriptor;
+tcudnnDestroyAlgorithmDescriptor *cudnnDestroyAlgorithmDescriptor;
+tcudnnCreateAlgorithmPerformance *cudnnCreateAlgorithmPerformance;
+tcudnnSetAlgorithmPerformance *cudnnSetAlgorithmPerformance;
+tcudnnGetAlgorithmPerformance *cudnnGetAlgorithmPerformance;
+tcudnnDestroyAlgorithmPerformance *cudnnDestroyAlgorithmPerformance;
+tcudnnGetAlgorithmSpaceSize *cudnnGetAlgorithmSpaceSize;
+tcudnnSaveAlgorithm *cudnnSaveAlgorithm;
+tcudnnRestoreAlgorithm *cudnnRestoreAlgorithm;
+tcudnnSetCallback *cudnnSetCallback;
+tcudnnGetCallback *cudnnGetCallback;
+tcudnnSetRNNDescriptor_v6 *cudnnSetRNNDescriptor_v6;
+tcudnnSetRNNDescriptor_v5 *cudnnSetRNNDescriptor_v5;
 
 
 static DynamicLibrary dynamic_library_open_find(const char **paths) {
@@ -681,6 +860,232 @@ static int cuewNvrtcInit(void) {
   return result;
 }
 
+static void cuewExitCudnn(void) {
+  if (cudnn_lib != NULL) {
+    /*  Ignore errors. */
+    dynamic_library_close(cudnn_lib);
+    cudnn_lib = NULL;
+  }
+}
+
+static int cuewCudnnInit(void) {
+  /* Library paths. */
+#ifdef _WIN32
+  /* Expected in c:/windows/system or similar, no path needed. */
+  const char *cudnn_paths[] = {"cudnn.dll", NULL};
+#elif defined(__APPLE__)
+  /* Default installation path. */
+  const char *cudnn_paths[] = {"/usr/local/cuda/lib/libcudnn.dylib", NULL};
+#else
+  const char *cudnn_paths[] = {"libcudnn.so",
+#  if defined(__x86_64__) || defined(_M_X64)
+                               "/usr/local/cuda/lib64/libcudnn.so",
+#else
+                               "/usr/local/cuda/lib/libcudnn.so",
+#endif
+                               NULL};
+#endif
+  static int initialized = 0;
+  static int result = 0;
+  int error;
+
+  if (initialized) {
+    return result;
+  }
+
+  initialized = 1;
+
+  error = atexit(cuewExitCudnn);
+  if (error) {
+    result = CUEW_ERROR_ATEXIT_FAILED;
+    return result;
+  }
+
+  /* Load library. */
+  cudnn_lib = dynamic_library_open_find(cudnn_paths);
+
+  if (cudnn_lib == NULL) {
+    result = CUEW_ERROR_OPEN_FAILED;
+    return result;
+  }
+
+  CUDNN_LIBRARY_FIND(cudnnGetVersion);
+  CUDNN_LIBRARY_FIND(cudnnGetCudartVersion);
+  CUDNN_LIBRARY_FIND(cudnnGetErrorString);
+  CUDNN_LIBRARY_FIND(cudnnQueryRuntimeError);
+  CUDNN_LIBRARY_FIND(cudnnGetProperty);
+  CUDNN_LIBRARY_FIND(cudnnCreate);
+  CUDNN_LIBRARY_FIND(cudnnDestroy);
+  CUDNN_LIBRARY_FIND(cudnnSetStream);
+  CUDNN_LIBRARY_FIND(cudnnGetStream);
+  CUDNN_LIBRARY_FIND(cudnnCreateTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetTensor4dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetTensor4dDescriptorEx);
+  CUDNN_LIBRARY_FIND(cudnnGetTensor4dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetTensorNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetTensorNdDescriptorEx);
+  CUDNN_LIBRARY_FIND(cudnnGetTensorNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetTensorSizeInBytes);
+  CUDNN_LIBRARY_FIND(cudnnDestroyTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnTransformTensor);
+  CUDNN_LIBRARY_FIND(cudnnAddTensor);
+  CUDNN_LIBRARY_FIND(cudnnCreateOpTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetOpTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetOpTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyOpTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnOpTensor);
+  CUDNN_LIBRARY_FIND(cudnnCreateReduceTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetReduceTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetReduceTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyReduceTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetReductionIndicesSize);
+  CUDNN_LIBRARY_FIND(cudnnGetReductionWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnReduceTensor);
+  CUDNN_LIBRARY_FIND(cudnnSetTensor);
+  CUDNN_LIBRARY_FIND(cudnnScaleTensor);
+  CUDNN_LIBRARY_FIND(cudnnCreateFilterDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetFilter4dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetFilter4dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetFilterNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetFilterNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyFilterDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnCreateConvolutionDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetConvolutionMathType);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionMathType);
+  CUDNN_LIBRARY_FIND(cudnnSetConvolutionGroupCount);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionGroupCount);
+  CUDNN_LIBRARY_FIND(cudnnSetConvolution2dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolution2dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolution2dForwardOutputDim);
+  CUDNN_LIBRARY_FIND(cudnnSetConvolutionNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionNdForwardOutputDim);
+  CUDNN_LIBRARY_FIND(cudnnDestroyConvolutionDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionForwardAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionForwardAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionForwardAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionForwardAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionForwardAlgorithm_v7);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionForwardWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnConvolutionForward);
+  CUDNN_LIBRARY_FIND(cudnnConvolutionBiasActivationForward);
+  CUDNN_LIBRARY_FIND(cudnnConvolutionBackwardBias);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardFilterAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionBackwardFilterAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionBackwardFilterAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardFilterAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardFilterAlgorithm_v7);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardFilterWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnConvolutionBackwardFilter);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardDataAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionBackwardDataAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnFindConvolutionBackwardDataAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardDataAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardDataAlgorithm_v7);
+  CUDNN_LIBRARY_FIND(cudnnGetConvolutionBackwardDataWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnConvolutionBackwardData);
+  CUDNN_LIBRARY_FIND(cudnnIm2Col);
+  CUDNN_LIBRARY_FIND(cudnnSoftmaxForward);
+  CUDNN_LIBRARY_FIND(cudnnSoftmaxBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreatePoolingDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetPooling2dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetPooling2dDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetPoolingNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetPoolingNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetPoolingNdForwardOutputDim);
+  CUDNN_LIBRARY_FIND(cudnnGetPooling2dForwardOutputDim);
+  CUDNN_LIBRARY_FIND(cudnnDestroyPoolingDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnPoolingForward);
+  CUDNN_LIBRARY_FIND(cudnnPoolingBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreateActivationDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetActivationDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetActivationDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyActivationDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnActivationForward);
+  CUDNN_LIBRARY_FIND(cudnnActivationBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreateLRNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetLRNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetLRNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyLRNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnLRNCrossChannelForward);
+  CUDNN_LIBRARY_FIND(cudnnLRNCrossChannelBackward);
+  CUDNN_LIBRARY_FIND(cudnnDivisiveNormalizationForward);
+  CUDNN_LIBRARY_FIND(cudnnDivisiveNormalizationBackward);
+  CUDNN_LIBRARY_FIND(cudnnDeriveBNTensorDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnBatchNormalizationForwardTraining);
+  CUDNN_LIBRARY_FIND(cudnnBatchNormalizationForwardInference);
+  CUDNN_LIBRARY_FIND(cudnnBatchNormalizationBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreateSpatialTransformerDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetSpatialTransformerNdDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroySpatialTransformerDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSpatialTfGridGeneratorForward);
+  CUDNN_LIBRARY_FIND(cudnnSpatialTfGridGeneratorBackward);
+  CUDNN_LIBRARY_FIND(cudnnSpatialTfSamplerForward);
+  CUDNN_LIBRARY_FIND(cudnnSpatialTfSamplerBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreateDropoutDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyDropoutDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDropoutGetStatesSize);
+  CUDNN_LIBRARY_FIND(cudnnDropoutGetReserveSpaceSize);
+  CUDNN_LIBRARY_FIND(cudnnSetDropoutDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnRestoreDropoutDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetDropoutDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDropoutForward);
+  CUDNN_LIBRARY_FIND(cudnnDropoutBackward);
+  CUDNN_LIBRARY_FIND(cudnnCreateRNNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyRNNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNForwardInferenceAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindRNNForwardInferenceAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNForwardTrainingAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindRNNForwardTrainingAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNBackwardDataAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindRNNBackwardDataAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNBackwardWeightsAlgorithmMaxCount);
+  CUDNN_LIBRARY_FIND(cudnnFindRNNBackwardWeightsAlgorithmEx);
+  CUDNN_LIBRARY_FIND(cudnnCreatePersistentRNNPlan);
+  CUDNN_LIBRARY_FIND(cudnnSetPersistentRNNPlan);
+  CUDNN_LIBRARY_FIND(cudnnDestroyPersistentRNNPlan);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNProjectionLayers);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNProjectionLayers);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNMatrixMathType);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNMatrixMathType);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNTrainingReserveSize);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNParamsSize);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNLinLayerMatrixParams);
+  CUDNN_LIBRARY_FIND(cudnnGetRNNLinLayerBiasParams);
+  CUDNN_LIBRARY_FIND(cudnnRNNForwardInference);
+  CUDNN_LIBRARY_FIND(cudnnRNNForwardTraining);
+  CUDNN_LIBRARY_FIND(cudnnRNNBackwardData);
+  CUDNN_LIBRARY_FIND(cudnnRNNBackwardWeights);
+  CUDNN_LIBRARY_FIND(cudnnCreateCTCLossDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetCTCLossDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetCTCLossDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyCTCLossDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnCTCLoss);
+  CUDNN_LIBRARY_FIND(cudnnGetCTCLossWorkspaceSize);
+  CUDNN_LIBRARY_FIND(cudnnCreateAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnSetAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnGetAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnCopyAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnDestroyAlgorithmDescriptor);
+  CUDNN_LIBRARY_FIND(cudnnCreateAlgorithmPerformance);
+  CUDNN_LIBRARY_FIND(cudnnSetAlgorithmPerformance);
+  CUDNN_LIBRARY_FIND(cudnnGetAlgorithmPerformance);
+  CUDNN_LIBRARY_FIND(cudnnDestroyAlgorithmPerformance);
+  CUDNN_LIBRARY_FIND(cudnnGetAlgorithmSpaceSize);
+  CUDNN_LIBRARY_FIND(cudnnSaveAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnRestoreAlgorithm);
+  CUDNN_LIBRARY_FIND(cudnnSetCallback);
+  CUDNN_LIBRARY_FIND(cudnnGetCallback);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNDescriptor_v6);
+  CUDNN_LIBRARY_FIND(cudnnSetRNNDescriptor_v5);
+
+  result = CUEW_SUCCESS;
+  return result;
+}
 
 int cuewInit(cuuint32_t flags) {
 	int result = CUEW_SUCCESS;
@@ -694,6 +1099,13 @@ int cuewInit(cuuint32_t flags) {
 
 	if (flags & CUEW_INIT_NVRTC) {
 		result = cuewNvrtcInit();
+		if (result != CUEW_SUCCESS) {
+			return result;
+		}
+	}
+
+	if (flags & CUEW_INIT_CUDNN) {
+		result = cuewCudnnInit();
 		if (result != CUEW_SUCCESS) {
 			return result;
 		}

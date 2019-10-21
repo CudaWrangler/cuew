@@ -66,8 +66,13 @@ typedef void* DynamicLibrary;
         _LIBRARY_FIND_CHECKED(nvrtc_lib, name)
 #define NVRTC_LIBRARY_FIND(name) _LIBRARY_FIND(nvrtc_lib, name)
 
+#define CUDNN_LIBRARY_FIND_CHECKED(name) \
+        _LIBRARY_FIND_CHECKED(cudnn_lib, name)
+#define CUDNN_LIBRARY_FIND(name) _LIBRARY_FIND(cudnn_lib, name)
+
 static DynamicLibrary cuda_lib;
 static DynamicLibrary nvrtc_lib;
+static DynamicLibrary cudnn_lib;
 
 /* Function definitions. */
 %FUNCTION_DEFINITIONS%
@@ -209,6 +214,60 @@ static int cuewNvrtcInit(void) {
   return result;
 }
 
+static void cuewExitCudnn(void) {
+  if (cudnn_lib != NULL) {
+    /*  Ignore errors. */
+    dynamic_library_close(cudnn_lib);
+    cudnn_lib = NULL;
+  }
+}
+
+static int cuewCudnnInit(void) {
+  /* Library paths. */
+#ifdef _WIN32
+  /* Expected in c:/windows/system or similar, no path needed. */
+  const char *cudnn_paths[] = {"cudnn.dll", NULL};
+#elif defined(__APPLE__)
+  /* Default installation path. */
+  const char *cudnn_paths[] = {"/usr/local/cuda/lib/libcudnn.dylib", NULL};
+#else
+  const char *cudnn_paths[] = {"libcudnn.so",
+#  if defined(__x86_64__) || defined(_M_X64)
+                               "/usr/local/cuda/lib64/libcudnn.so",
+#else
+                               "/usr/local/cuda/lib/libcudnn.so",
+#endif
+                               NULL};
+#endif
+  static int initialized = 0;
+  static int result = 0;
+  int error;
+
+  if (initialized) {
+    return result;
+  }
+
+  initialized = 1;
+
+  error = atexit(cuewExitCudnn);
+  if (error) {
+    result = CUEW_ERROR_ATEXIT_FAILED;
+    return result;
+  }
+
+  /* Load library. */
+  cudnn_lib = dynamic_library_open_find(cudnn_paths);
+
+  if (cudnn_lib == NULL) {
+    result = CUEW_ERROR_OPEN_FAILED;
+    return result;
+  }
+
+%LIB_FIND_CUDNN%
+
+  result = CUEW_SUCCESS;
+  return result;
+}
 
 int cuewInit(cuuint32_t flags) {
 	int result = CUEW_SUCCESS;
@@ -222,6 +281,13 @@ int cuewInit(cuuint32_t flags) {
 
 	if (flags & CUEW_INIT_NVRTC) {
 		result = cuewNvrtcInit();
+		if (result != CUEW_SUCCESS) {
+			return result;
+		}
+	}
+
+	if (flags & CUEW_INIT_CUDNN) {
+		result = cuewCudnnInit();
 		if (result != CUEW_SUCCESS) {
 			return result;
 		}
